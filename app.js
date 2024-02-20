@@ -1,6 +1,7 @@
 require("dotenv").config();
 const createError = require("http-errors");
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -14,7 +15,6 @@ const compression = require("compression");
 const helmet = require("helmet");
 
 const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/users");
 
 const app = express();
 
@@ -63,15 +63,15 @@ app.set("view engine", "pug");
 //   }
 // });
 
-// app.use(
-//   session({
-//     secret: "cats",
-//     resave: false,
-//     saveUninitialized: true,
-//     store: new MongoStore({ mongoUrl: mongoDB }),
-//   })
-// );
-
+app.use(
+  session({
+    secret: "cats",
+    resave: false,
+    saveUninitialized: true,
+    store: new MongoStore({ mongoUrl: mongoDB }),
+  })
+);
+app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(logger("dev"));
@@ -86,7 +86,6 @@ app.use((req, res, next) => {
 });
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

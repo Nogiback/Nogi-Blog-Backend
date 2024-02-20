@@ -8,4 +8,8 @@ const AuthorSchema = new Schema({
   password: { type: String, required: true },
 });
 
+AuthorSchema.virtual("url").get(function () {
+  return `/author/${this._id}`;
+});
+
 module.exports = mongoose.model("Author", AuthorSchema);
