@@ -3,7 +3,7 @@ const en = require("javascript-time-ago/locale/en");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-TimeAgo.addDefaultLocale(en);
+TimeAgo.addLocale(en);
 const timeAgo = new TimeAgo("en-US");
 
 const CommentSchema = new Schema({

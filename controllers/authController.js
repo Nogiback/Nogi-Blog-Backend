@@ -1,6 +1,5 @@
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
-const passport = require("passport");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
@@ -23,7 +22,7 @@ exports.register_post = [
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      res.status(403).json({
+      res.status(400).json({
         errors: errors.array(),
         message: "Error: Registration Failure.",
       });
@@ -31,7 +30,7 @@ exports.register_post = [
     }
 
     if (duplicateUser) {
-      res.status(403).json({
+      res.status(409).json({
         message: "Error: Username already exists.",
       });
       return;
@@ -67,52 +66,65 @@ exports.login_post = [
     .escape(),
 
   asyncHandler(async (req, res, next) => {
-    const loginUser = await User.findOne({ username: req.body.username });
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      res.status(403).json({
+      res.status(401).json({
         errors: errors.array(),
         message: "Error: Login Failure.",
       });
       return;
     }
 
-    passport.authenticate("local", { session: false }, (err, user) => {
-      user = loginUser;
-      if (err || !user) {
-        return res.status(403).json({
-          message: "Error: Incorrect username or password.",
+    const user = await User.findOne({ username: req.body.username });
+
+    if (!user) {
+      res.status(401).json({ message: "Error: Wrong username or password." });
+      return;
+    }
+
+    const isValidPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+
+    if (!isValidPassword) {
+      res.status(401).json({ message: "Error: Wrong username or password." });
+      return;
+    }
+
+    const payloadUser = {
+      _id: user._id,
+      username: user.username,
+      isAuthor: user.author,
+    };
+    jwt.sign(
+      { user: payloadUser },
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" },
+      (err, token) => {
+        if (err) {
+          res.status(500).json({ err });
+          return;
+        }
+        res.status(200).json({
+          token: token,
+          user: payloadUser,
+          message: "Login successful.",
         });
+        return;
       }
-      req.login(user, { session: false }, (err) => {
-        const body = {
-          _id: user._id,
-          username: user.username,
-          isAuthor: user.author,
-        };
-        jwt.sign(
-          { user: body },
-          process.env.JWT_SECRET,
-          { expiresIn: "2h" },
-          (err, token) => {
-            if (err) {
-              return res.status(400).json(err);
-            }
-            res.status(200).json({
-              token: token,
-              user: body,
-              message: "Login successful.",
-            });
-          }
-        );
-      });
-    })(req, res);
+    );
   }),
 ];
 
+exports.logout_get = function (req, res) {
+  req.logout();
+  res.redirect("/");
+};
+
 exports.auth_get = function (req, res, next) {
-  jwt.verify(req.token, process.env.JWT_SECRET, async (err, authData) => {
+  jwt.verify(req.token, process.env.JWT_SECRET, async (err, payload) => {
     if (err) {
       res.json({
         isAuthenticated: false,
@@ -120,7 +132,7 @@ exports.auth_get = function (req, res, next) {
     }
     res.json({
       isAuthenticated: true,
-      authData: authData,
+      payload,
     });
   });
 };
