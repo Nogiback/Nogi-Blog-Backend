@@ -10,16 +10,15 @@ const BlogPostSchema = new Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   author: { type: Schema.Types.ObjectId, ref: "Author", required: true },
+  image: { type: String },
   timestamp: { type: Date, required: true, default: Date.now },
-  published: { type: Boolean, required: true },
+  published: { type: Boolean, default: false, required: true },
+  categories: { type: [String], default: [] },
+  comments: { type: [String], default: [] },
 });
 
 BlogPostSchema.virtual("formattedTimestamp").get(function () {
   return timeAgo.format(this.timestamp);
-});
-
-BlogPostSchema.virtual("url").get(function () {
-  return `/posts/${this._id}`;
 });
 
 module.exports = mongoose.model("BlogPost", BlogPostSchema);
