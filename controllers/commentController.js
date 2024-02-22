@@ -19,7 +19,7 @@ exports.comments_get = asyncHandler(async (req, res, next) => {
   res.status(200).json({ allPostComments });
 });
 
-exports.comment_create = [body("comment")];
+exports.comment_create = [];
 
 // router.get("/posts/:postID/comments", commentController.comments_get);
 // router.post(

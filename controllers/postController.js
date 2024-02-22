@@ -1,9 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
 const BlogPost = require("../models/BlogPost");
-const Comment = require("../models/Comment");
 
 exports.posts_get = asyncHandler(async (req, res, next) => {
   const allPosts = await BlogPost.find()
