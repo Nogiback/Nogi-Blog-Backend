@@ -13,22 +13,22 @@ router.get("/logout", authController.logout_get);
 
 // Blog Post Routes
 router.get("/posts", postController.posts_get);
-router.post("/posts", verifyToken, postController.posts_create);
+router.post("/posts", verifyToken, postController.post_create);
 router.get("/posts/:postID", postController.postDetails_get);
-router.put("/posts/:postID", verifyToken, postController.postDetails_update);
-router.delete("/posts/:postID", verifyToken, postController.postDetails_delete);
+router.put("/posts/:postID", verifyToken, postController.post_update);
+router.delete("/posts/:postID", verifyToken, postController.post_delete);
 
 // // Comment Routes
-// router.get("/posts/:postID/comments", commentController.comments_get);
-// router.post(
-//   "/posts/:postID/comments",
-//   verifyToken,
-//   commentController.comment_create
-// );
-// router.delete(
-//   "/posts/:postID/comments/:commentID",
-//   verifyToken,
-//   commentController.comment_delete
-// );
+router.get("/posts/:postID/comments", commentController.comments_get);
+router.post(
+  "/posts/:postID/comments",
+  verifyToken,
+  commentController.comment_create
+);
+router.delete(
+  "/posts/:postID/comments/:commentID",
+  verifyToken,
+  commentController.comment_delete
+);
 
 module.exports = router;

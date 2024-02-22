@@ -7,7 +7,7 @@ TimeAgo.addLocale(en);
 const timeAgo = new TimeAgo("en-US");
 
 const CommentSchema = new Schema({
-  username: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   comment: { type: String, required: true, maxLength: 500 },
   post: { type: Schema.Types.ObjectId, ref: "BlogPost", required: true },
   timestamp: { type: Date, required: true, default: Date.now },

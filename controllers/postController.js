@@ -3,6 +3,8 @@ const { body, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const BlogPost = require("../models/BlogPost");
 
+// GET ALL BLOG POSTS
+
 exports.posts_get = asyncHandler(async (req, res, next) => {
   const allPosts = await BlogPost.find()
     .sort({ timestamp: -1 })
@@ -17,7 +19,9 @@ exports.posts_get = asyncHandler(async (req, res, next) => {
   res.status(200).json({ allPosts });
 });
 
-exports.posts_create = [
+// CREATE BLOG POST
+
+exports.post_create = [
   body("title", "Title must not be empty.")
     .trim()
     .isLength({ min: 1 })
@@ -60,6 +64,8 @@ exports.posts_create = [
   }),
 ];
 
+// GET SINGLE BLOG POST
+
 exports.postDetails_get = asyncHandler(async (req, res, next) => {
   const post = await BlogPost.findById(req.params.postID)
     .populate("author", "username")
@@ -73,7 +79,9 @@ exports.postDetails_get = asyncHandler(async (req, res, next) => {
   res.status(200).json({ post });
 });
 
-exports.postDetails_update = [
+// UPDATE SINGLE BLOG POST
+
+exports.post_update = [
   body("title", "Title must not be empty.")
     .trim()
     .isLength({ min: 1 })
@@ -128,7 +136,9 @@ exports.postDetails_update = [
   }),
 ];
 
-exports.postDetails_delete = asyncHandler(async (req, res, next) => {
+// DELETE BLOG POST
+
+exports.post_delete = asyncHandler(async (req, res, next) => {
   jwt.verify(req.token, process.env.JWT_SECRET, async (err, payload) => {
     if (payload.user.isAuthor) {
       if (err) {
