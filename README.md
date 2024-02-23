@@ -6,6 +6,8 @@ This is one of the NodeJS projects under the Fullstack Javascript Development cu
 
 This repository is for the backend/API side of the blog application.
 
+[Click here for the client](https://github.com/Nogiback/Nogi-Blog-Client)
+
 Live demo coming soon...
 
 ## Built With
