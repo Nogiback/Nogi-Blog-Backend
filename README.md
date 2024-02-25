@@ -8,15 +8,13 @@ This repository is for the backend/API side of the blog application.
 
 [Click here for the client](https://github.com/Nogiback/Nogi-Blog-Client)
 
-Live demo coming soon...
-
 ## Built With
 
 NodeJS, Express, Mongoose, MongoDB, JWT, Bcrypt
 
 ## Lessons Learned
 
-Coming soon...
+This project provided more experience with user authentication and authorization. I learned how to use JSON Web Tokens (JWT) and hook up a backend API to a client to create my first full stack application.
 
 ## Feedback
 
