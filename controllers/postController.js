@@ -2,6 +2,8 @@ const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const BlogPost = require("../models/BlogPost");
+const Comment = require("../models/Comment");
+const User = require("../models/User");
 
 // GET ALL BLOG POSTS
 
@@ -146,16 +148,29 @@ exports.post_delete = asyncHandler(async (req, res, next) => {
         return;
       }
 
-      const deletePost = await BlogPost.findByIdAndDelete(req.params.postID);
+      const postToDelete = await BlogPost.findById(req.params.postID);
 
-      if (!deletePost) {
+      if (!postToDelete) {
         res.status(404).json({ message: "Error: Post not found." });
         return;
       }
 
-      res.status(200).json({ message: "Post successfully deleted" });
+      if (!postToDelete.comments.length) {
+        await BlogPost.findByIdAndDelete(req.params.postID);
+        res.status(200).json({ message: "Post successfully deleted" });
+        return;
+      } else {
+        postToDelete.comments.forEach(async (comment) => {
+          await User.findByIdAndUpdate(comment.user._id, {
+            $pullAll: { comments: [comment] },
+          });
+          await Comment.findByIdAndDelete(comment._id);
+          await BlogPost.findByIdAndDelete(req.params.postID);
+          res.status(200).json({ message: "Post successfully deleted" });
+        });
+      }
     } else {
-      res.status(403).json({ message: "Error: Unauthorized author.", payload });
+      res.status(403).json({ message: "Error: Unauthorized author." });
     }
   });
 });

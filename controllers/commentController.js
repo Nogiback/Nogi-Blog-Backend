@@ -14,7 +14,7 @@ exports.comments_get = asyncHandler(async (req, res, next) => {
   ).exec();
 
   if (!allPostComments) {
-    res.status(404).json({ message: "Error: No post comments found." });
+    res.status(404).json({ message: "Error: No post found." });
     return;
   }
 
@@ -50,10 +50,10 @@ exports.comment_create = [
 
       await newComment.save();
       await BlogPost.findByIdAndUpdate(req.params.postID, {
-        $push: { comments: newComment._id },
+        $push: { comments: newComment },
       });
       await User.findByIdAndUpdate(payload.user._id, {
-        $push: { comments: newComment._id },
+        $push: { comments: newComment },
       });
       res.status(200).json({ newComment });
     });
@@ -68,13 +68,28 @@ exports.comment_delete = asyncHandler(async (req, res, next) => {
       res.status(403).json({ message: "Error: Token invalid." });
       return;
     }
-    const deleteComment = await Comment.findByIdAndDelete(req.params.commentID);
 
-    if (!deleteComment) {
+    const commentToDelete = await Comment.findById(req.params.commentID);
+    const currentUser = await User.findById(payload.user._id);
+    const isAuthorized = currentUser.comments.includes(commentToDelete._id);
+
+    if (!commentToDelete) {
       res.status(404).json({ message: "Error: Comment not found." });
       return;
     }
 
-    res.status(200).json({ message: "Comment successfully deleted" });
+    if (!isAuthorized) {
+      res.status(403).json({ message: "Error: Not authorized." });
+      return;
+    } else {
+      await User.findByIdAndUpdate(payload.user._id, {
+        $pullAll: { comments: [commentToDelete] },
+      });
+      await BlogPost.findByIdAndUpdate(req.params.postID, {
+        $pullAll: { comments: [commentToDelete] },
+      });
+      await Comment.findByIdAndDelete(req.params.commentID);
+      res.status(200).json({ message: "Comment successfully deleted" });
+    }
   });
 });

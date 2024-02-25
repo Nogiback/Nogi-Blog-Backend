@@ -12,9 +12,7 @@ const BlogPostSchema = new Schema({
   author: { type: Schema.Types.ObjectId, ref: "User", required: true },
   image: { type: String },
   timestamp: { type: Date, required: true, default: Date.now },
-  published: { type: Boolean, default: false, required: true },
-  categories: { type: [String], default: [] },
-  comments: { type: [String], default: [] },
+  comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
 });
 
 BlogPostSchema.virtual("formattedTimestamp").get(function () {
