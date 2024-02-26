@@ -18,7 +18,7 @@ exports.posts_get = asyncHandler(async (req, res, next) => {
     return;
   }
 
-  res.status(200).json({ allPosts });
+  res.status(200).json(allPosts);
 });
 
 // CREATE BLOG POST
