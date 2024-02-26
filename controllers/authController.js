@@ -136,26 +136,3 @@ exports.login_post = [
     );
   }),
 ];
-
-// LOGOUT
-
-exports.logout_get = function (req, res) {
-  req.logout();
-  res.redirect("/");
-};
-
-// CHECK AUTHENTICATION
-
-exports.auth_get = function (req, res, next) {
-  jwt.verify(req.token, process.env.JWT_SECRET, async (err, payload) => {
-    if (err) {
-      res.json({
-        isAuthenticated: false,
-      });
-    }
-    res.json({
-      isAuthenticated: true,
-      payload,
-    });
-  });
-};
