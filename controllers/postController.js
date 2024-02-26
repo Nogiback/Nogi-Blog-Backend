@@ -43,11 +43,12 @@ exports.post_create = [
     }
 
     jwt.verify(req.token, process.env.JWT_SECRET, async (err, payload) => {
+      if (err) {
+        res.status(403).json({ message: "Error: Token invalid." });
+        return;
+      }
+
       if (payload.user.isAuthor) {
-        if (err) {
-          res.status(403).json({ message: "Error: Token invalid." });
-          return;
-        }
         const newPost = new BlogPost({
           title: req.body.title,
           content: req.body.content,
@@ -103,12 +104,11 @@ exports.post_update = [
     }
 
     jwt.verify(req.token, process.env.JWT_SECRET, async (err, payload) => {
+      if (err) {
+        res.status(403).json({ message: "Error: Token invalid." });
+        return;
+      }
       if (payload.user.isAuthor) {
-        if (err) {
-          res.status(403).json({ message: "Error: Token invalid." });
-          return;
-        }
-
         const updatedDetails = {
           title: req.body.title,
           content: req.body.content,
@@ -142,12 +142,11 @@ exports.post_update = [
 
 exports.post_delete = asyncHandler(async (req, res, next) => {
   jwt.verify(req.token, process.env.JWT_SECRET, async (err, payload) => {
+    if (err) {
+      res.status(403).json({ message: "Error: Token invalid." });
+      return;
+    }
     if (payload.user.isAuthor) {
-      if (err) {
-        res.status(403).json({ message: "Error: Token invalid." });
-        return;
-      }
-
       const postToDelete = await BlogPost.findById(req.params.postID);
 
       if (!postToDelete) {
