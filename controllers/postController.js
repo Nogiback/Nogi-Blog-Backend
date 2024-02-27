@@ -79,7 +79,7 @@ exports.postDetails_get = asyncHandler(async (req, res, next) => {
     return;
   }
 
-  res.status(200).json({ post });
+  res.status(200).json(post);
 });
 
 // UPDATE SINGLE BLOG POST
