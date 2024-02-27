@@ -38,37 +38,43 @@ exports.register_post = [
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const newUser = new User({
-      username: req.body.username,
-      password: hashedPassword,
+    bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
+      if (err) {
+        res.status(500).json({ err });
+        return;
+      } else {
+        const newUser = new User({
+          username: req.body.username,
+          password: hashedPassword,
+        });
+        await newUser.save();
+        res.status(200).json({ message: "New user created successfully." });
+      }
     });
 
-    await newUser.save();
+    // const payloadUser = {
+    //   id: newUser._id,
+    //   username: newUser.username,
+    //   isAuthor: newUser.author,
+    // };
 
-    const payloadUser = {
-      id: newUser._id,
-      username: newUser.username,
-      isAuthor: newUser.author,
-    };
-
-    jwt.sign(
-      { user: payloadUser },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" },
-      (err, token) => {
-        if (err) {
-          res.status(500).json({ err });
-          return;
-        }
-        res.status(200).json({
-          token: token,
-          user: payloadUser,
-          message: "New user created successfully.",
-        });
-        return;
-      }
-    );
+    // jwt.sign(
+    //   { user: payloadUser },
+    //   process.env.JWT_SECRET,
+    //   { expiresIn: "1d" },
+    //   (err, token) => {
+    //     if (err) {
+    //       res.status(500).json({ err });
+    //       return;
+    //     }
+    //     res.status(200).json({
+    //       token: token,
+    //       user: payloadUser,
+    //       message: "New user created successfully.",
+    //     });
+    //     return;
+    //   }
+    // );
   }),
 ];
 
@@ -139,7 +145,6 @@ exports.login_post = [
 
 // LOGOUT
 exports.logout_post = (req, res, next) => {
-  req.logout();
   req.session.destroy((err) => {
     if (err) return next(err);
     res.status(200).json({ message: "User successfully logged out." });
