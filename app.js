@@ -33,7 +33,7 @@ app.use(
   session({
     secret: "cats",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: new MongoStore({ mongoUrl: mongoDB }),
   })
 );

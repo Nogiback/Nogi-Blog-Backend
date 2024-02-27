@@ -8,6 +8,7 @@ const verifyToken = require("../middlewares/verifyToken");
 // Authentication Routes
 router.post("/register", authController.register_post);
 router.post("/login", authController.login_post);
+router.post("/logout", authController.logout_post);
 
 // Blog Post Routes
 router.get("/posts", postController.posts_get);
