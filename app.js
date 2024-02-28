@@ -10,14 +10,13 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const compression = require("compression");
 const apiRouter = require("./routes/api");
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
 
 const app = express();
-
-app.set("trust proxy", 1);
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  next();
-});
 
 // Applying rate limit to site
 const RateLimit = require("express-rate-limit");
@@ -43,7 +42,7 @@ app.use(
     store: new MongoStore({ mongoUrl: mongoDB }),
   })
 );
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
