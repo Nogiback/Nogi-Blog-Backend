@@ -13,6 +13,11 @@ const apiRouter = require("./routes/api");
 
 const app = express();
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
+
 // Applying rate limit to site
 const RateLimit = require("express-rate-limit");
 const limiter = RateLimit({
