@@ -8,17 +8,9 @@ const User = require("../models/User");
 // GET ALL POST COMMENTS
 
 exports.comments_get = asyncHandler(async (req, res, next) => {
-  const allPostComments = await BlogPost.findById(
-    req.params.postID,
-    "comments"
-  ).exec();
+  const allPostComments = await Comment.find({ post: req.params.postID });
 
-  if (!allPostComments) {
-    res.status(404).json({ message: "Error: No post found." });
-    return;
-  }
-
-  res.status(200).json({ allPostComments });
+  res.status(200).json(allPostComments);
 });
 
 // CREATE COMMENT
@@ -55,7 +47,7 @@ exports.comment_create = [
       await User.findByIdAndUpdate(payload.user._id, {
         $push: { comments: newComment },
       });
-      res.status(200).json({ newComment });
+      res.status(200).json(newComment);
     });
   }),
 ];

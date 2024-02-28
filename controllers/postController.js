@@ -57,7 +57,7 @@ exports.post_create = [
         });
 
         await newPost.save();
-        res.status(200).json({ newPost });
+        res.status(200).json(newPost);
       } else {
         res
           .status(403)
@@ -128,7 +128,7 @@ exports.post_update = [
           return;
         }
 
-        res.status(200).json({ updatedPost });
+        res.status(200).json(updatedPost);
       } else {
         res
           .status(403)
