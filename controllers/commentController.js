@@ -8,7 +8,11 @@ const User = require("../models/User");
 // GET ALL POST COMMENTS
 
 exports.comments_get = asyncHandler(async (req, res, next) => {
-  const allPostComments = await Comment.find({ post: req.params.postID });
+  const allPostComments = await Comment.find({
+    post: req.params.postID,
+  })
+    .populate("user", "username")
+    .exec();
 
   res.status(200).json(allPostComments);
 });
