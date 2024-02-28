@@ -12,6 +12,7 @@ exports.comments_get = asyncHandler(async (req, res, next) => {
     post: req.params.postID,
   })
     .populate("user", "username")
+    .sort({ timestamp: -1 })
     .exec();
 
   res.status(200).json(allPostComments);
