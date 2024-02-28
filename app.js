@@ -34,6 +34,7 @@ async function main() {
   await mongoose.connect(mongoDB);
 }
 
+app.options("*", cors());
 app.use(
   session({
     secret: "cats",
