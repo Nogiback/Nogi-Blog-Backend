@@ -165,8 +165,9 @@ exports.post_delete = asyncHandler(async (req, res, next) => {
           });
           await Comment.findByIdAndDelete(comment._id);
           await BlogPost.findByIdAndDelete(req.params.postID);
-          res.status(200).json({ message: "Post successfully deleted" });
         });
+        res.status(200).json({ message: "Post successfully deleted" });
+        return;
       }
     } else {
       res.status(403).json({ message: "Error: Unauthorized author." });
