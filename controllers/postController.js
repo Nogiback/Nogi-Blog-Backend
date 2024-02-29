@@ -154,18 +154,19 @@ exports.post_delete = asyncHandler(async (req, res, next) => {
         return;
       }
 
-      if (!postToDelete.comments.length) {
+      if (postToDelete.comments.length === 0) {
         await BlogPost.findByIdAndDelete(req.params.postID);
         res.status(200).json({ message: "Post successfully deleted" });
         return;
       } else {
         postToDelete.comments.forEach(async (comment) => {
-          await User.findByIdAndUpdate(comment.user._id, {
-            $pullAll: { comments: [comment] },
+          const commentToDelete = await Comment.findById(comment);
+          await User.findByIdAndUpdate(commentToDelete.user, {
+            $pullAll: { comments: [commentToDelete._id] },
           });
-          await Comment.findByIdAndDelete(comment._id);
-          await BlogPost.findByIdAndDelete(req.params.postID);
+          await Comment.findByIdAndDelete(commentToDelete._id);
         });
+        await BlogPost.findByIdAndDelete(req.params.postID);
         res.status(200).json({ message: "Post successfully deleted" });
         return;
       }
